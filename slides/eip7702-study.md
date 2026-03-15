@@ -377,6 +377,39 @@ EOA --delegate-→ ExchangeDeposit 本体
 
 ---
 
+## 補足: receive() が発火しないケース
+
+### ETH が receive() を経由せずに届くパターン
+
+| パターン | receive() | Deposit イベント | 自動転送 |
+|:--|:--|:--|:--|
+| 通常の ETH 送金 | **発火する** | 記録される | される |
+| `selfdestruct(addr)` | **発火しない** | **記録されない** | **されない** |
+| coinbase 報酬 (PoS) | **発火しない** | **記録されない** | **されない** |
+| delegation 設定前の残高 | - | **記録されない** | **されない** |
+
+- `selfdestruct` は受信側のコードを一切実行せずに ETH を送る
+- これらのケースでは ETH が **サイレントに滞留** してしまう
+
+### 対策: gatherEth() / gatherErc20()
+
+```solidity
+// ExchangeDeposit に用意されている回収関数
+function gatherEth() external {
+    uint256 balance = address(this).balance;
+    if (balance == 0) { return; }
+    (bool result, ) = getSendAddress().call{ value: balance }('');
+    require(result, 'Could not gather ETH');
+}
+```
+
+- delegated EOA に対して `gatherEth()` を呼ぶと滞留 ETH を回収可能
+- calldatasize > 0 → Proxy の **DELEGATECALL パス** で ExchangeDeposit に転送
+- ERC20 トークンも同様に `gatherErc20(token)` で回収できる
+- **定期的な残高チェック + gatherEth() の運用** が必要
+
+---
+
 ## 実運用に向けた課題
 
 ### 1. 既存 EOA の秘密鍵で authorization 署名が必要
