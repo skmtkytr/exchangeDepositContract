@@ -241,6 +241,8 @@ cast code 0xd9909d...52252 --rpc-url $RPC
 
 → **EOA が Proxy と同じ動作をするようになった**
 
+> [Sepolia TX](https://sepolia.etherscan.io/tx/0x913f068e57e02cd5bd3638456b3ed31295879b678a8b7c9fbe708b6265541e2d) — Type 4, delegation + Deposit イベント発火
+
 ---
 
 ## 検証結果 2: イベント集約 ✅
@@ -262,6 +264,8 @@ User → ETH送金 → delegated EOA（元は普通のEOA）
 - delegated EOA への ETH 送金で **ExchangeDeposit 本体に Deposit イベント**が記録
 - `eth_getLogs(ExchangeDeposit)` で **一括監視** が実現
 - `Deposit.receiver` = delegated EOA アドレス（= 既存の入金アドレス）
+
+> [Sepolia TX](https://sepolia.etherscan.io/tx/0xddf3afa2ad2f7f76dc7536039871012ddf97fd8f808f6c60ac900db0704c4ad5) — 外部から delegated EOA に ETH 送金 → Deposit が ExchangeDeposit 本体に記録
 
 ---
 
@@ -286,6 +290,8 @@ User → ETH送金 → delegated EOA（元は普通のEOA）
   `0xef0100...` のバイトコードを実行しようとして失敗
 - **delegate 先は実際のコントラクトでなければならない**
 
+> [delegation TX](https://sepolia.etherscan.io/tx/0x1f6e2b5561220d7d66d3809fecc16e4b06ffce6d26a214cd7b144e4f1415d099) — EOA #5 → EOA #4 への delegation は成功（ETH送金時に revert）
+
 ---
 
 ## 検証結果 4: receive() 回避 ✅
@@ -307,6 +313,8 @@ cast send 0xEF7E36C95aA677174C6edEE052Da64E009165018 \
 
 **ポイント:** authorization は TX 実行前に処理されるので、
 to をどこにしても delegation は正しく設定される。
+
+> [to=coldAddress](https://sepolia.etherscan.io/tx/0x4c81e1107bed1194fc32aa7f5535bbed0e3610b8f3406342eaefecdfdd66fb16) / [to=address(0)](https://sepolia.etherscan.io/tx/0x24806a5c1b6523c42145d8d74feede7cf3abdb01a9ff84bc6aa2dffc046ebad8)
 
 ---
 
@@ -330,6 +338,8 @@ vm.stopBroadcast();
 - ガス支払い者（sender）と delegation 対象の EOA は別でOK
 
 → 大量の既存 EOA を **バッチで一気にスマートアカウント化** できる
+
+> [Sepolia TX](https://sepolia.etherscan.io/tx/0x9f00d9c6c922c76f1851d81c0ef609a727984213a46105c83143f3891701edd1) — 1TX で 3 EOA を一括 delegate (authorization_list × 3)
 
 ---
 
@@ -374,6 +384,9 @@ EOA --delegate-→ ExchangeDeposit 本体
 - EOA の storage は空なので `coldAddress == address(0)` → revert
 - **Proxy に delegate するのが正解**
   （Proxy は CALL パターンで本体の storage を参照する）
+
+> ※ revert は cast シミュレーションで確認。バッチ delegation TX では ExchangeDeposit 本体への
+> delegate も試行: [Sepolia TX](https://sepolia.etherscan.io/tx/0x9f00d9c6c922c76f1851d81c0ef609a727984213a46105c83143f3891701edd1)
 
 ---
 

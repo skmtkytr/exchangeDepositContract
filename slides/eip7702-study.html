@@ -579,6 +579,9 @@ cast send 0xd9909d...52252 \
 <span class="hljs-comment"># → 0xef01007842449503ceefb51a4a33557a804a2d9339517b</span>
 </code></pre>
 <p>→ <strong>EOA が Proxy と同じ動作をするようになった</strong></p>
+<blockquote>
+<p><a href="https://sepolia.etherscan.io/tx/0x913f068e57e02cd5bd3638456b3ed31295879b678a8b7c9fbe708b6265541e2d">Sepolia TX</a> — Type 4, delegation + Deposit イベント発火</p>
+</blockquote>
 <footer>社内勉強会</footer>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="11" data-paginate="true" data-header="EIP-7702 × ExchangeDeposit 検証レポート" data-footer="社内勉強会" data-theme="default" data-style="section {
@@ -636,6 +639,9 @@ table {
 <li><code>eth_getLogs(ExchangeDeposit)</code> で <strong>一括監視</strong> が実現</li>
 <li><code>Deposit.receiver</code> = delegated EOA アドレス（= 既存の入金アドレス）</li>
 </ul>
+<blockquote>
+<p><a href="https://sepolia.etherscan.io/tx/0xddf3afa2ad2f7f76dc7536039871012ddf97fd8f808f6c60ac900db0704c4ad5">Sepolia TX</a> — 外部から delegated EOA に ETH 送金 → Deposit が ExchangeDeposit 本体に記録</p>
+</blockquote>
 <footer>社内勉強会</footer>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="12" data-paginate="true" data-header="EIP-7702 × ExchangeDeposit 検証レポート" data-footer="社内勉強会" data-theme="default" data-style="section {
@@ -692,6 +698,9 @@ table {
 <code>0xef0100...</code> のバイトコードを実行しようとして失敗</li>
 <li><strong>delegate 先は実際のコントラクトでなければならない</strong></li>
 </ul>
+<blockquote>
+<p><a href="https://sepolia.etherscan.io/tx/0x1f6e2b5561220d7d66d3809fecc16e4b06ffce6d26a214cd7b144e4f1415d099">delegation TX</a> — EOA #5 → EOA #4 への delegation は成功（ETH送金時に revert）</p>
+</blockquote>
 <footer>社内勉強会</footer>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="13" data-paginate="true" data-header="EIP-7702 × ExchangeDeposit 検証レポート" data-footer="社内勉強会" data-theme="default" data-style="section {
@@ -767,6 +776,9 @@ cast send 0xEF7E36C95aA677174C6edEE052Da64E009165018 \
 </code></pre>
 <p><strong>ポイント:</strong> authorization は TX 実行前に処理されるので、<br />
 to をどこにしても delegation は正しく設定される。</p>
+<blockquote>
+<p><a href="https://sepolia.etherscan.io/tx/0x4c81e1107bed1194fc32aa7f5535bbed0e3610b8f3406342eaefecdfdd66fb16">to=coldAddress</a> / <a href="https://sepolia.etherscan.io/tx/0x24806a5c1b6523c42145d8d74feede7cf3abdb01a9ff84bc6aa2dffc046ebad8">to=address(0)</a></p>
+</blockquote>
 <footer>社内勉強会</footer>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="14" data-paginate="true" data-header="EIP-7702 × ExchangeDeposit 検証レポート" data-footer="社内勉強会" data-theme="default" data-style="section {
@@ -824,6 +836,9 @@ vm.stopBroadcast();
 <li>ガス支払い者（sender）と delegation 対象の EOA は別でOK</li>
 </ul>
 <p>→ 大量の既存 EOA を <strong>バッチで一気にスマートアカウント化</strong> できる</p>
+<blockquote>
+<p><a href="https://sepolia.etherscan.io/tx/0x9f00d9c6c922c76f1851d81c0ef609a727984213a46105c83143f3891701edd1">Sepolia TX</a> — 1TX で 3 EOA を一括 delegate (authorization_list × 3)</p>
+</blockquote>
 <footer>社内勉強会</footer>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="15" data-paginate="true" data-header="EIP-7702 × ExchangeDeposit 検証レポート" data-footer="社内勉強会" data-theme="default" data-style="section {
@@ -938,6 +953,10 @@ table {
 <li><strong>Proxy に delegate するのが正解</strong><br />
 （Proxy は CALL パターンで本体の storage を参照する）</li>
 </ul>
+<blockquote>
+<p>※ revert は cast シミュレーションで確認。バッチ delegation TX では ExchangeDeposit 本体への<br />
+delegate も試行: <a href="https://sepolia.etherscan.io/tx/0x9f00d9c6c922c76f1851d81c0ef609a727984213a46105c83143f3891701edd1">Sepolia TX</a></p>
+</blockquote>
 <footer>社内勉強会</footer>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="17" data-paginate="true" data-header="EIP-7702 × ExchangeDeposit 検証レポート" data-footer="社内勉強会" data-theme="default" data-style="section {
