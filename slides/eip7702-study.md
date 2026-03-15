@@ -491,16 +491,17 @@ function gatherEth() external {
 
 ## Appendix: Sepolia テストアドレス
 
-| 用途 | Address |
-|:--|:--|
-| adminAddress (*) | `0x88b289ef07B30354e17797a37D5b724840868B62` |
-| ExchangeDeposit | `0x605ac676044D591E4eCD5d6C18606c237134a7Dc` |
-| Proxy (CREATE2) | `0x7842449503ceefb51a4a33557a804a2d9339517b` |
-| coldAddress | `0xEF7E36C95aA677174C6edEE052Da64E009165018` |
-| DepositLogic v1 | `0x3F45b7dDF4438424b41500Fee8a327fd19c7bf3C` |
-| DepositLogic v2 (CALL版) | `0xb8bfa4cad0555eec9c7e965543eb0eb0f665e107` |
-| テストEOA #1 | `0x8301deFb55637FEf8cA18CB24D0432e1913B2bf2` |
-| テストEOA #3 | `0xd9909dBAcB1D2eb6A84F704c93218B60B3b52252` |
-| テストEOA #5 (chain test) | `0x23b4E056A050965A20B45c91449CB43B81656657` |
+| 用途 | Address | Etherscan |
+|:--|:--|:--|
+| adminAddress (*) | `0x88b289ef07B30354e17797a37D5b724840868B62` | [link](https://sepolia.etherscan.io/address/0x88b289ef07B30354e17797a37D5b724840868B62) |
+| ExchangeDeposit | `0x605ac676044D591E4eCD5d6C18606c237134a7Dc` | [verified](https://sepolia.etherscan.io/address/0x605ac676044D591E4eCD5d6C18606c237134a7Dc#code) |
+| ProxyFactory | `0x911a9b474546b19dc7dcd8c88358f724a24a43d9` | [verified](https://sepolia.etherscan.io/address/0x911a9b474546b19dc7dcd8c88358f724a24a43d9#code) |
+| Proxy (CREATE2) | `0x7842449503ceefb51a4a33557a804a2d9339517b` | [link](https://sepolia.etherscan.io/address/0x7842449503ceefb51a4a33557a804a2d9339517b) |
+| coldAddress | `0xEF7E36C95aA677174C6edEE052Da64E009165018` | [link](https://sepolia.etherscan.io/address/0xEF7E36C95aA677174C6edEE052Da64E009165018) |
+| DepositLogic v1 | `0x3F45b7dDF4438424b41500Fee8a327fd19c7bf3C` | [link](https://sepolia.etherscan.io/address/0x3F45b7dDF4438424b41500Fee8a327fd19c7bf3C) |
+| DepositLogic v2 (CALL版) | `0xb8bfa4cad0555eec9c7e965543eb0eb0f665e107` | [link](https://sepolia.etherscan.io/address/0xb8bfa4cad0555eec9c7e965543eb0eb0f665e107) |
+| テストEOA #1 | `0x8301deFb55637FEf8cA18CB24D0432e1913B2bf2` | [link](https://sepolia.etherscan.io/address/0x8301deFb55637FEf8cA18CB24D0432e1913B2bf2) |
+| テストEOA #3 | `0xd9909dBAcB1D2eb6A84F704c93218B60B3b52252` | [link](https://sepolia.etherscan.io/address/0xd9909dBAcB1D2eb6A84F704c93218B60B3b52252) |
+| テストEOA #5 (chain test) | `0x23b4E056A050965A20B45c91449CB43B81656657` | [link](https://sepolia.etherscan.io/address/0x23b4E056A050965A20B45c91449CB43B81656657) |
 
 (*) adminAddress = deploy元アドレス（コントラクトのオーナー権限）
