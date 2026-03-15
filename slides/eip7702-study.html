@@ -1030,11 +1030,16 @@ function gatherEth() external {
 }
 </code></pre>
 <ul>
-<li>delegated EOA に対して <code>gatherEth()</code> を呼ぶと滞留 ETH を回収可能</li>
+<li>delegated EOA に対して <code>gatherEth()</code> を呼ぶと滞留 ETH を回収可能 <img class="emoji" draggable="false" alt="✅" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/2705.svg" data-marp-twemoji=""/></li>
 <li>calldatasize &gt; 0 → Proxy の <strong>DELEGATECALL パス</strong> で ExchangeDeposit に転送</li>
-<li>ERC20 トークンも同様に <code>gatherErc20(token)</code> で回収できる</li>
+<li>ERC20 トークンも同様に <code>gatherErc20(token)</code> で回収できるはず</li>
 <li><strong>定期的な残高チェック + gatherEth() の運用</strong> が必要</li>
 </ul>
+<blockquote>
+<p><strong>検証済み</strong>: delegated EOA #3 で <code>gatherEth()</code> → coldAddress に ETH 転送成功<br />
+<a href="https://sepolia.etherscan.io/tx/0xa0fa1a37f21954ee15c56508d6f24ad1aceb080f54b155dc46bd59cc06ae64c0">Sepolia TX</a><br />
+gas: 36,390 / 内部送金: 0.0008 ETH → coldAddress</p>
+</blockquote>
 <footer>社内勉強会</footer>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="18" data-paginate="true" data-header="EIP-7702 × ExchangeDeposit 検証レポート" data-footer="社内勉強会" data-theme="default" data-style="section {

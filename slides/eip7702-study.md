@@ -403,10 +403,14 @@ function gatherEth() external {
 }
 ```
 
-- delegated EOA に対して `gatherEth()` を呼ぶと滞留 ETH を回収可能
+- delegated EOA に対して `gatherEth()` を呼ぶと滞留 ETH を回収可能 ✅
 - calldatasize > 0 → Proxy の **DELEGATECALL パス** で ExchangeDeposit に転送
-- ERC20 トークンも同様に `gatherErc20(token)` で回収できる
+- ERC20 トークンも同様に `gatherErc20(token)` で回収できるはず
 - **定期的な残高チェック + gatherEth() の運用** が必要
+
+> **検証済み**: delegated EOA #3 で `gatherEth()` → coldAddress に ETH 転送成功
+> [Sepolia TX](https://sepolia.etherscan.io/tx/0xa0fa1a37f21954ee15c56508d6f24ad1aceb080f54b155dc46bd59cc06ae64c0)
+> gas: 36,390 / 内部送金: 0.0008 ETH → coldAddress
 
 ---
 
