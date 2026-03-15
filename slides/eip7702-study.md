@@ -489,6 +489,32 @@ function gatherEth() external {
 
 ---
 
+## 補足: アドレスポイズニング / ダストアタック対策
+
+### 現行 EOA 方式の問題
+
+- EOA は **送られてくる ETH を拒否できない**
+- 攻撃者が微小額（dust）を大量の EOA に送りつけることが可能
+- **アドレスポイズニング**: 似たアドレスからダスト送金 → ユーザーが誤送金を誘発
+
+### ExchangeDeposit の minimumInput による防御
+
+```solidity
+require(msg.value >= minimumInput, 'Amount too small');
+// minimumInput = 1e16 (0.01 ETH)
+```
+
+- **minimumInput 未満の送金は revert** される
+- ダスト送金がそもそもコントラクトレベルで拒否される
+- `minimumInput` は admin が `changeMinInput()` で変更可能
+
+### EIP-7702 との組み合わせ
+
+- 既存 EOA を delegate → **EOA なのに minimumInput で dust を弾ける**
+- sweep/collect 不要 + ダストアタック耐性 = 運用負荷が大幅に軽減
+
+---
+
 ## Appendix: Sepolia テストアドレス
 
 | 用途 | Address | Etherscan |
