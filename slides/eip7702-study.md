@@ -27,6 +27,7 @@ style: |
 
 # EIP-7702 × ExchangeDeposit 検証レポート
 
+**さらばsweep！さらばcollect！**
 **既存の EOA 入金アドレスをスマートアカウント化できるか？**
 
 Sepolia テストネットでの実験結果
