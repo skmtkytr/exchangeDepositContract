@@ -44,7 +44,7 @@ pre {
 table {
   font-size: 20px;
 }
-;" data-marpit-pagination-total="22">
+;" data-marpit-pagination-total="23">
 <header>EIP-7702 × ExchangeDeposit 検証レポート</header>
 
 <h1 id="eip-7702-%C3%97-exchangedeposit-%E6%A4%9C%E8%A8%BC%E3%83%AC%E3%83%9D%E3%83%BC%E3%83%88">EIP-7702 × ExchangeDeposit 検証レポート</h1>
@@ -89,7 +89,7 @@ pre {
 table {
   font-size: 20px;
 }
-;" data-marpit-pagination-total="22">
+;" data-marpit-pagination-total="23">
 <header>EIP-7702 × ExchangeDeposit 検証レポート</header>
 <h2 id="%E8%83%8C%E6%99%AF%E3%83%BB%E8%AA%B2%E9%A1%8C">背景・課題</h2>
 <h3 id="%E7%8F%BE%E8%A1%8C%E3%81%AE%E5%85%A5%E9%87%91%E6%96%B9%E5%BC%8F">現行の入金方式</h3>
@@ -147,38 +147,51 @@ pre {
 table {
   font-size: 20px;
 }
-;" data-marpit-pagination-total="22">
+;" data-marpit-pagination-total="23">
 <header>EIP-7702 × ExchangeDeposit 検証レポート</header>
-<h2 id="%E3%82%A2%E3%83%97%E3%83%AD%E3%83%BC%E3%83%81-exchangedeposit-%E3%82%92%E5%8F%82%E8%80%83%E3%81%AB">アプローチ: ExchangeDeposit を参考に</h2>
-<h3 id="bitbank-%E3%81%AE-exchangedeposit-%E3%82%B3%E3%83%B3%E3%83%88%E3%83%A9%E3%82%AF%E3%83%88">bitbank の ExchangeDeposit コントラクト</h3>
-<ul>
-<li>取引所向けのデポジット管理コントラクト（OSS）</li>
-<li><strong>Proxy + CALL パターン</strong> でイベント集約を実現</li>
-<li>今回はこの仕組みを参考に、EIP-7702 との組み合わせを検証</li>
-</ul>
-<h3 id="2%E3%81%A4%E3%81%AE%E3%82%A2%E3%83%97%E3%83%AD%E3%83%BC%E3%83%81">2つのアプローチ</h3>
+<h2 id="%E7%99%BB%E5%A0%B4%E4%BA%BA%E7%89%A9">登場人物</h2>
 <table>
 <thead>
 <tr>
-<th style="text-align:left"></th>
-<th style="text-align:left">ExchangeDeposit Proxy 方式</th>
-<th style="text-align:left">EIP-7702 方式</th>
+<th style="text-align:left">名前</th>
+<th style="text-align:left">種別</th>
+<th style="text-align:left">役割</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left">概要</td>
-<td style="text-align:left">CREATE2 で Proxy をデプロイ</td>
-<td style="text-align:left">既存 EOA にコードを委任</td>
+<td style="text-align:left"><strong>adminAddress</strong></td>
+<td style="text-align:left">EOA</td>
+<td style="text-align:left">管理アカウント。コントラクトの設定変更・kill 権限を持つ</td>
 </tr>
 <tr>
-<td style="text-align:left">アドレス</td>
-<td style="text-align:left">新規コントラクトアドレス</td>
-<td style="text-align:left"><strong>既存 EOA をそのまま使う</strong></td>
+<td style="text-align:left"><strong>ExchangeDeposit</strong></td>
+<td style="text-align:left">Contract</td>
+<td style="text-align:left">本体。receive() で ETH 受取 → coldAddress へ転送 + Deposit イベント発火</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>ProxyFactory</strong></td>
+<td style="text-align:left">Contract</td>
+<td style="text-align:left">Proxy を CREATE2 で大量生成するファクトリ</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Proxy</strong></td>
+<td style="text-align:left">Contract</td>
+<td style="text-align:left">入金アドレス。ETH 受取時に CALL で ExchangeDeposit 本体に転送</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>coldAddress</strong></td>
+<td style="text-align:left">EOA</td>
+<td style="text-align:left">コールドウォレット。入金された ETH の最終送金先</td>
 </tr>
 </tbody>
 </table>
-<p>→ EIP-7702 なら <strong>既存の EOA 入金アドレスをそのままスマートアカウント化</strong> できる可能性</p>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code>User → ETH → Proxy ──CALL──→ ExchangeDeposit ──転送──→ coldAddress
+                                 │
+                              emit Deposit()
+                                 │
+                           adminAddress が設定管理
+</code></pre>
 <footer>社内勉強会</footer>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="4" data-paginate="true" data-header="EIP-7702 × ExchangeDeposit 検証レポート" data-footer="社内勉強会" data-theme="default" data-style="section {
@@ -217,22 +230,38 @@ pre {
 table {
   font-size: 20px;
 }
-;" data-marpit-pagination-total="22">
+;" data-marpit-pagination-total="23">
 <header>EIP-7702 × ExchangeDeposit 検証レポート</header>
-<h2 id="exchangedeposit-%E3%81%AE%E4%BB%95%E7%B5%84%E3%81%BF13">ExchangeDeposit の仕組み（1/3）</h2>
-<h3 id="proxy-%E3%81%AE%E3%83%90%E3%82%A4%E3%83%88%E3%82%B3%E3%83%BC%E3%83%89%E5%8B%95%E4%BD%9C">Proxy のバイトコード動作</h3>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code>calldatasize == 0 の場合:
-  → CALL(ExchangeDeposit, msg.value)
-  → ExchangeDeposit.receive() が実行される
-  → msg.sender = Proxyアドレス
-
-calldatasize &gt; 0 の場合:
-  → DELEGATECALL(ExchangeDeposit, msg.data)
-  → gatherErc20() 等の関数を Proxy のコンテキストで実行
-</code></pre>
-<h3 id="%E3%83%9D%E3%82%A4%E3%83%B3%E3%83%88-call-%E3%83%91%E3%82%BF%E3%83%BC%E3%83%B3">ポイント: CALL パターン</h3>
-<p>ETH送金時は <strong>CALL</strong> なので、<code>msg.sender</code> にProxyアドレスが入り、<br />
-ExchangeDeposit 本体のコンテキストで <code>Deposit</code> イベントが発火する。</p>
+<h2 id="%E3%82%A2%E3%83%97%E3%83%AD%E3%83%BC%E3%83%81-exchangedeposit-%E3%82%92%E5%8F%82%E8%80%83%E3%81%AB">アプローチ: ExchangeDeposit を参考に</h2>
+<h3 id="bitbank-%E3%81%AE-exchangedeposit-%E3%82%B3%E3%83%B3%E3%83%88%E3%83%A9%E3%82%AF%E3%83%88">bitbank の ExchangeDeposit コントラクト</h3>
+<ul>
+<li>取引所向けのデポジット管理コントラクト（OSS）</li>
+<li><strong>Proxy + CALL パターン</strong> でイベント集約を実現</li>
+<li>今回はこの仕組みを参考に、EIP-7702 との組み合わせを検証</li>
+</ul>
+<h3 id="2%E3%81%A4%E3%81%AE%E3%82%A2%E3%83%97%E3%83%AD%E3%83%BC%E3%83%81">2つのアプローチ</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left"></th>
+<th style="text-align:left">ExchangeDeposit Proxy 方式</th>
+<th style="text-align:left">EIP-7702 方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">概要</td>
+<td style="text-align:left">CREATE2 で Proxy をデプロイ</td>
+<td style="text-align:left">既存 EOA にコードを委任</td>
+</tr>
+<tr>
+<td style="text-align:left">アドレス</td>
+<td style="text-align:left">新規コントラクトアドレス</td>
+<td style="text-align:left"><strong>既存 EOA をそのまま使う</strong></td>
+</tr>
+</tbody>
+</table>
+<p>→ EIP-7702 なら <strong>既存の EOA 入金アドレスをそのままスマートアカウント化</strong> できる可能性</p>
 <footer>社内勉強会</footer>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="5" data-paginate="true" data-header="EIP-7702 × ExchangeDeposit 検証レポート" data-footer="社内勉強会" data-theme="default" data-style="section {
@@ -271,25 +300,22 @@ pre {
 table {
   font-size: 20px;
 }
-;" data-marpit-pagination-total="22">
+;" data-marpit-pagination-total="23">
 <header>EIP-7702 × ExchangeDeposit 検証レポート</header>
-<h2 id="exchangedeposit-%E3%81%AE%E4%BB%95%E7%B5%84%E3%81%BF23">ExchangeDeposit の仕組み（2/3）</h2>
-<h3 id="receive-%E3%81%AE%E5%87%A6%E7%90%86%E3%83%95%E3%83%AD%E3%83%BC">receive() の処理フロー</h3>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-solidity">receive() external payable {
-    require(coldAddress != address(0), 'I am dead :-(');
-    require(msg.value &gt;= minimumInput, 'Amount too small');
-    (bool success, ) = coldAddress.call{ value: msg.value }('');
-    require(success, 'Forwarding funds failed');
-    emit Deposit(msg.sender, msg.value);
-}
+<h2 id="exchangedeposit-%E3%81%AE%E4%BB%95%E7%B5%84%E3%81%BF13">ExchangeDeposit の仕組み（1/3）</h2>
+<h3 id="proxy-%E3%81%AE%E3%83%90%E3%82%A4%E3%83%88%E3%82%B3%E3%83%BC%E3%83%89%E5%8B%95%E4%BD%9C">Proxy のバイトコード動作</h3>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code>calldatasize == 0 の場合:
+  → CALL(ExchangeDeposit, msg.value)
+  → ExchangeDeposit.receive() が実行される
+  → msg.sender = Proxyアドレス
+
+calldatasize &gt; 0 の場合:
+  → DELEGATECALL(ExchangeDeposit, msg.data)
+  → gatherErc20() 等の関数を Proxy のコンテキストで実行
 </code></pre>
-<ol>
-<li><code>coldAddress</code> が生きているか確認</li>
-<li><code>minimumInput</code>（0.01 ETH）以上か確認</li>
-<li><strong>coldAddress に ETH を自動転送</strong></li>
-<li><code>Deposit(receiver, amount)</code> イベントを発火</li>
-</ol>
-<p>→ 入金と同時に <strong>コールドウォレットへの自動転送 + ログ記録</strong> が実現</p>
+<h3 id="%E3%83%9D%E3%82%A4%E3%83%B3%E3%83%88-call-%E3%83%91%E3%82%BF%E3%83%BC%E3%83%B3">ポイント: CALL パターン</h3>
+<p>ETH送金時は <strong>CALL</strong> なので、<code>msg.sender</code> にProxyアドレスが入り、<br />
+ExchangeDeposit 本体のコンテキストで <code>Deposit</code> イベントが発火する。</p>
 <footer>社内勉強会</footer>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="6" data-paginate="true" data-header="EIP-7702 × ExchangeDeposit 検証レポート" data-footer="社内勉強会" data-theme="default" data-style="section {
@@ -328,32 +354,25 @@ pre {
 table {
   font-size: 20px;
 }
-;" data-marpit-pagination-total="22">
+;" data-marpit-pagination-total="23">
 <header>EIP-7702 × ExchangeDeposit 検証レポート</header>
-<h2 id="exchangedeposit-%E3%81%AE%E4%BB%95%E7%B5%84%E3%81%BF33">ExchangeDeposit の仕組み（3/3）</h2>
-<h3 id="thisaddress-immutable-vs-coldaddress-storage">thisAddress (immutable) vs coldAddress (storage)</h3>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code>┌─────────────────────────────────────────────────┐
-│ ExchangeDeposit 本体 (0x605a...)                │
-│                                                 │
-│  immutable: thisAddress = address(this)          │
-│  immutable: adminAddress                        │
-│  storage:   coldAddress = 0xEF7E...             │
-│  storage:   minimumInput = 1e16                 │
-│  storage:   implementation                      │
-└─────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────┐
-│ Proxy (0x7842...)                               │
-│                                                 │
-│  バイトコードに ExchangeDeposit アドレスを埋込   │
-│  → CALLで ExchangeDeposit に転送                │
-│  → イベントは ExchangeDeposit 本体に記録         │
-└─────────────────────────────────────────────────┘
+<h2 id="exchangedeposit-%E3%81%AE%E4%BB%95%E7%B5%84%E3%81%BF23">ExchangeDeposit の仕組み（2/3）</h2>
+<h3 id="receive-%E3%81%AE%E5%87%A6%E7%90%86%E3%83%95%E3%83%AD%E3%83%BC">receive() の処理フロー</h3>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-solidity">receive() external payable {
+    require(coldAddress != address(0), 'I am dead :-(');
+    require(msg.value &gt;= minimumInput, 'Amount too small');
+    (bool success, ) = coldAddress.call{ value: msg.value }('');
+    require(success, 'Forwarding funds failed');
+    emit Deposit(msg.sender, msg.value);
+}
 </code></pre>
-<ul>
-<li><strong>immutable</strong>: バイトコードに埋め込まれる → どのコンテキストでも読める</li>
-<li><strong>storage</strong>: コントラクトごとに独立 → Proxy/EOA からは読めない</li>
-</ul>
+<ol>
+<li><code>coldAddress</code> が生きているか確認</li>
+<li><code>minimumInput</code>（0.01 ETH）以上か確認</li>
+<li><strong>coldAddress に ETH を自動転送</strong></li>
+<li><code>Deposit(receiver, amount)</code> イベントを発火</li>
+</ol>
+<p>→ 入金と同時に <strong>コールドウォレットへの自動転送 + ログ記録</strong> が実現</p>
 <footer>社内勉強会</footer>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="7" data-paginate="true" data-header="EIP-7702 × ExchangeDeposit 検証レポート" data-footer="社内勉強会" data-theme="default" data-style="section {
@@ -392,25 +411,31 @@ pre {
 table {
   font-size: 20px;
 }
-;" data-marpit-pagination-total="22">
+;" data-marpit-pagination-total="23">
 <header>EIP-7702 × ExchangeDeposit 検証レポート</header>
-<h2 id="%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88%E9%9B%86%E7%B4%84%E3%81%AE%E4%BB%95%E7%B5%84%E3%81%BF%E7%8F%BE%E8%A1%8C-eoa-%E6%96%B9%E5%BC%8F%E3%81%A8%E3%81%AE%E6%AF%94%E8%BC%83">イベント集約の仕組み（現行 EOA 方式との比較）</h2>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code>【現行】各EOA個別監視                  【ExchangeDeposit】イベント集約
+<h2 id="exchangedeposit-%E3%81%AE%E4%BB%95%E7%B5%84%E3%81%BF33">ExchangeDeposit の仕組み（3/3）</h2>
+<h3 id="thisaddress-immutable-vs-coldaddress-storage">thisAddress (immutable) vs coldAddress (storage)</h3>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code>┌─────────────────────────────────────────────────┐
+│ ExchangeDeposit 本体 (0x605a...)                │
+│                                                 │
+│  immutable: thisAddress = address(this)          │
+│  immutable: adminAddress                        │
+│  storage:   coldAddress = 0xEF7E...             │
+│  storage:   minimumInput = 1e16                 │
+│  storage:   implementation                      │
+└─────────────────────────────────────────────────┘
 
-User → ETH → EOA_1  ← 個別監視       User → ETH → Proxy_1
-User → ETH → EOA_2  ← 個別監視                      │ CALL
-User → ETH → EOA_3  ← 個別監視       User → ETH → Proxy_2
-  :           :                                      │ CALL
-                                                     ▼
-                                        ExchangeDeposit 本体 ← 一括監視
-                                          emit Deposit(proxy_addr, amount)
-                                          coldAddress.call{value}()
-                                                     ▼
-                                              coldAddress（コールドウォレット）
+┌─────────────────────────────────────────────────┐
+│ Proxy (0x7842...)                               │
+│                                                 │
+│  バイトコードに ExchangeDeposit アドレスを埋込   │
+│  → CALLで ExchangeDeposit に転送                │
+│  → イベントは ExchangeDeposit 本体に記録         │
+└─────────────────────────────────────────────────┘
 </code></pre>
 <ul>
-<li>全 Proxy の入金イベントが <strong>ExchangeDeposit 本体アドレス1つ</strong> に集まる</li>
-<li><code>eth_getLogs</code> 1回で全入金を検知可能</li>
+<li><strong>immutable</strong>: バイトコードに埋め込まれる → どのコンテキストでも読める</li>
+<li><strong>storage</strong>: コントラクトごとに独立 → Proxy/EOA からは読めない</li>
 </ul>
 <footer>社内勉強会</footer>
 </section>
@@ -450,23 +475,26 @@ pre {
 table {
   font-size: 20px;
 }
-;" data-marpit-pagination-total="22">
+;" data-marpit-pagination-total="23">
 <header>EIP-7702 × ExchangeDeposit 検証レポート</header>
-<h2 id="eip-7702-%E3%81%A8%E3%81%AF12">EIP-7702 とは（1/2）</h2>
-<h3 id="%E6%A6%82%E8%A6%81">概要</h3>
-<ul>
-<li><strong>Pectra upgrade</strong>（2025年5月）で導入</li>
-<li>EOA に <strong>コントラクトコードを委任</strong> する仕組み</li>
-<li>EOA のコードフィールドに <code>0xef0100{address}</code> が設定される</li>
-<li>EOA が <strong>スマートアカウント</strong> として振る舞える</li>
-</ul>
-<h3 id="type-4-%E3%83%88%E3%83%A9%E3%83%B3%E3%82%B6%E3%82%AF%E3%82%B7%E3%83%A7%E3%83%B3">Type 4 トランザクション</h3>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code>TransactionType = 0x04
+<h2 id="%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88%E9%9B%86%E7%B4%84%E3%81%AE%E4%BB%95%E7%B5%84%E3%81%BF%E7%8F%BE%E8%A1%8C-eoa-%E6%96%B9%E5%BC%8F%E3%81%A8%E3%81%AE%E6%AF%94%E8%BC%83">イベント集約の仕組み（現行 EOA 方式との比較）</h2>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code>【現行】各EOA個別監視                  【ExchangeDeposit】イベント集約
 
-fields: [chain_id, nonce, max_priority_fee, max_fee,
-         gas_limit, to, value, data, access_list,
-         authorization_list]  ← NEW
+User → ETH → EOA_1  ← 個別監視       User → ETH → Proxy_1
+User → ETH → EOA_2  ← 個別監視                      │ CALL
+User → ETH → EOA_3  ← 個別監視       User → ETH → Proxy_2
+  :           :                                      │ CALL
+                                                     ▼
+                                        ExchangeDeposit 本体 ← 一括監視
+                                          emit Deposit(proxy_addr, amount)
+                                          coldAddress.call{value}()
+                                                     ▼
+                                              coldAddress（コールドウォレット）
 </code></pre>
+<ul>
+<li>全 Proxy の入金イベントが <strong>ExchangeDeposit 本体アドレス1つ</strong> に集まる</li>
+<li><code>eth_getLogs</code> 1回で全入金を検知可能</li>
+</ul>
 <footer>社内勉強会</footer>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="9" data-paginate="true" data-header="EIP-7702 × ExchangeDeposit 検証レポート" data-footer="社内勉強会" data-theme="default" data-style="section {
@@ -505,25 +533,23 @@ pre {
 table {
   font-size: 20px;
 }
-;" data-marpit-pagination-total="22">
+;" data-marpit-pagination-total="23">
 <header>EIP-7702 × ExchangeDeposit 検証レポート</header>
-<h2 id="eip-7702-%E3%81%A8%E3%81%AF22">EIP-7702 とは（2/2）</h2>
-<h3 id="authorization_list">authorization_list</h3>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code>authorization_list: [
-  { chain_id, address, nonce, y_parity, r, s }
-]
-</code></pre>
+<h2 id="eip-7702-%E3%81%A8%E3%81%AF12">EIP-7702 とは（1/2）</h2>
+<h3 id="%E6%A6%82%E8%A6%81">概要</h3>
 <ul>
-<li>各 EOA が「このコントラクトに委任する」という <strong>署名</strong> を提出</li>
-<li>署名: <code>keccak256(0x05 || rlp([chain_id, address, nonce]))</code> → ECDSA</li>
-<li><strong>1TX で複数 EOA</strong> の delegation を設定可能</li>
-<li>delegation 設定者 ≠ TX 送信者（ガス支払い者）でもOK</li>
+<li><strong>Pectra upgrade</strong>（2025年5月）で導入</li>
+<li>EOA に <strong>コントラクトコードを委任</strong> する仕組み</li>
+<li>EOA のコードフィールドに <code>0xef0100{address}</code> が設定される</li>
+<li>EOA が <strong>スマートアカウント</strong> として振る舞える</li>
 </ul>
-<h3 id="delegation-%E3%81%AE%E8%A7%A3%E9%99%A4">delegation の解除</h3>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-bash"><span class="hljs-comment"># address(0) を指定すると delegation 解除</span>
-cast send &lt;TO&gt; --auth 0x0000...0000 --private-key &lt;KEY&gt;
+<h3 id="type-4-%E3%83%88%E3%83%A9%E3%83%B3%E3%82%B6%E3%82%AF%E3%82%B7%E3%83%A7%E3%83%B3">Type 4 トランザクション</h3>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code>TransactionType = 0x04
+
+fields: [chain_id, nonce, max_priority_fee, max_fee,
+         gas_limit, to, value, data, access_list,
+         authorization_list]  ← NEW
 </code></pre>
-<p>→ 既存 EOA のアドレスを変えずに、<strong>コードを付けたり外したり</strong>できる</p>
 <footer>社内勉強会</footer>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="10" data-paginate="true" data-header="EIP-7702 × ExchangeDeposit 検証レポート" data-footer="社内勉強会" data-theme="default" data-style="section {
@@ -562,26 +588,25 @@ pre {
 table {
   font-size: 20px;
 }
-;" data-marpit-pagination-total="22">
+;" data-marpit-pagination-total="23">
 <header>EIP-7702 × ExchangeDeposit 検証レポート</header>
-<h2 id="%E6%A4%9C%E8%A8%BC%E7%B5%90%E6%9E%9C-1-delegation-%E5%9F%BA%E6%9C%AC%E5%8B%95%E4%BD%9C-%E2%9C%85">検証結果 1: delegation 基本動作 <img class="emoji" draggable="false" alt="✅" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/2705.svg" data-marp-twemoji=""/></h2>
-<h3 id="%E6%97%A2%E5%AD%98-eoa-%E2%86%92-exchangedeposit-proxy-%E3%81%AB-delegate-%E2%86%92-eth-%E9%80%81%E9%87%91">既存 EOA → ExchangeDeposit Proxy に delegate → ETH 送金</h3>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-bash"><span class="hljs-comment"># テストEOA を既存 Proxy にdelegate</span>
-cast send 0xd9909d...52252 \
-  --auth 0x7842449503ceefb51a4a33557a804a2d9339517b \
-  --value 0.0001ether \
-  --private-key <span class="hljs-variable">$KEY</span> \
-  --rpc-url <span class="hljs-variable">$RPC</span>
+<h2 id="eip-7702-%E3%81%A8%E3%81%AF22">EIP-7702 とは（2/2）</h2>
+<h3 id="authorization_list">authorization_list</h3>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code>authorization_list: [
+  { chain_id, address, nonce, y_parity, r, s }
+]
 </code></pre>
-<p><strong>結果:</strong> Deposit イベントが発火。ETH が coldAddress に自動転送された。</p>
-<h3 id="delegation-%E7%A2%BA%E8%AA%8D">delegation 確認</h3>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-bash">cast code 0xd9909d...52252 --rpc-url <span class="hljs-variable">$RPC</span>
-<span class="hljs-comment"># → 0xef01007842449503ceefb51a4a33557a804a2d9339517b</span>
+<ul>
+<li>各 EOA が「このコントラクトに委任する」という <strong>署名</strong> を提出</li>
+<li>署名: <code>keccak256(0x05 || rlp([chain_id, address, nonce]))</code> → ECDSA</li>
+<li><strong>1TX で複数 EOA</strong> の delegation を設定可能</li>
+<li>delegation 設定者 ≠ TX 送信者（ガス支払い者）でもOK</li>
+</ul>
+<h3 id="delegation-%E3%81%AE%E8%A7%A3%E9%99%A4">delegation の解除</h3>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-bash"><span class="hljs-comment"># address(0) を指定すると delegation 解除</span>
+cast send &lt;TO&gt; --auth 0x0000...0000 --private-key &lt;KEY&gt;
 </code></pre>
-<p>→ <strong>EOA が Proxy と同じ動作をするようになった</strong></p>
-<blockquote>
-<p><a href="https://sepolia.etherscan.io/tx/0x913f068e57e02cd5bd3638456b3ed31295879b678a8b7c9fbe708b6265541e2d">Sepolia TX</a> — Type 4, delegation + Deposit イベント発火</p>
-</blockquote>
+<p>→ 既存 EOA のアドレスを変えずに、<strong>コードを付けたり外したり</strong>できる</p>
 <footer>社内勉強会</footer>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="11" data-paginate="true" data-header="EIP-7702 × ExchangeDeposit 検証レポート" data-footer="社内勉強会" data-theme="default" data-style="section {
@@ -620,27 +645,25 @@ pre {
 table {
   font-size: 20px;
 }
-;" data-marpit-pagination-total="22">
+;" data-marpit-pagination-total="23">
 <header>EIP-7702 × ExchangeDeposit 検証レポート</header>
-<h2 id="%E6%A4%9C%E8%A8%BC%E7%B5%90%E6%9E%9C-2-%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88%E9%9B%86%E7%B4%84-%E2%9C%85">検証結果 2: イベント集約 <img class="emoji" draggable="false" alt="✅" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/2705.svg" data-marp-twemoji=""/></h2>
-<h3 id="call-%E3%83%91%E3%82%BF%E3%83%BC%E3%83%B3%E3%81%AB%E3%82%88%E3%82%8B%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88%E9%9B%86%E7%B4%84%E3%81%8C-eoa-%E3%81%A7%E3%82%82%E5%8B%95%E4%BD%9C">CALL パターンによるイベント集約が EOA でも動作</h3>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code>User → ETH送金 → delegated EOA（元は普通のEOA）
-                   │
-                   │ Proxyバイトコードが実行される
-                   │ calldatasize==0 → CALL
-                   ▼
-            ExchangeDeposit 本体
-              │ receive() → emit Deposit(eoa_addr, amount)
-              ▼
-           coldAddress
+<h2 id="%E6%A4%9C%E8%A8%BC%E7%B5%90%E6%9E%9C-1-delegation-%E5%9F%BA%E6%9C%AC%E5%8B%95%E4%BD%9C-%E2%9C%85">検証結果 1: delegation 基本動作 <img class="emoji" draggable="false" alt="✅" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/2705.svg" data-marp-twemoji=""/></h2>
+<h3 id="%E6%97%A2%E5%AD%98-eoa-%E2%86%92-exchangedeposit-proxy-%E3%81%AB-delegate-%E2%86%92-eth-%E9%80%81%E9%87%91">既存 EOA → ExchangeDeposit Proxy に delegate → ETH 送金</h3>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-bash"><span class="hljs-comment"># テストEOA を既存 Proxy にdelegate</span>
+cast send 0xd9909d...52252 \
+  --auth 0x7842449503ceefb51a4a33557a804a2d9339517b \
+  --value 0.0001ether \
+  --private-key <span class="hljs-variable">$KEY</span> \
+  --rpc-url <span class="hljs-variable">$RPC</span>
 </code></pre>
-<ul>
-<li>delegated EOA への ETH 送金で <strong>ExchangeDeposit 本体に Deposit イベント</strong>が記録</li>
-<li><code>eth_getLogs(ExchangeDeposit)</code> で <strong>一括監視</strong> が実現</li>
-<li><code>Deposit.receiver</code> = delegated EOA アドレス（= 既存の入金アドレス）</li>
-</ul>
+<p><strong>結果:</strong> Deposit イベントが発火。ETH が coldAddress に自動転送された。</p>
+<h3 id="delegation-%E7%A2%BA%E8%AA%8D">delegation 確認</h3>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-bash">cast code 0xd9909d...52252 --rpc-url <span class="hljs-variable">$RPC</span>
+<span class="hljs-comment"># → 0xef01007842449503ceefb51a4a33557a804a2d9339517b</span>
+</code></pre>
+<p>→ <strong>EOA が Proxy と同じ動作をするようになった</strong></p>
 <blockquote>
-<p><a href="https://sepolia.etherscan.io/tx/0xddf3afa2ad2f7f76dc7536039871012ddf97fd8f808f6c60ac900db0704c4ad5">Sepolia TX</a> — 外部から delegated EOA に ETH 送金 → Deposit が ExchangeDeposit 本体に記録</p>
+<p><a href="https://sepolia.etherscan.io/tx/0x913f068e57e02cd5bd3638456b3ed31295879b678a8b7c9fbe708b6265541e2d">Sepolia TX</a> — Type 4, delegation + Deposit イベント発火</p>
 </blockquote>
 <footer>社内勉強会</footer>
 </section>
@@ -680,26 +703,27 @@ pre {
 table {
   font-size: 20px;
 }
-;" data-marpit-pagination-total="22">
+;" data-marpit-pagination-total="23">
 <header>EIP-7702 × ExchangeDeposit 検証レポート</header>
-<h2 id="%E6%A4%9C%E8%A8%BC%E7%B5%90%E6%9E%9C-3-delegation-chain-%E2%9D%8C">検証結果 3: delegation chain <img class="emoji" draggable="false" alt="❌" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/274c.svg" data-marp-twemoji=""/></h2>
-<h3 id="eoa-%E2%86%92-eoa-%E2%86%92-contract-%E3%81%AE%E3%83%81%E3%82%A7%E3%83%BC%E3%83%B3%E3%81%AF%E4%B8%8D%E5%8F%AF">EOA → EOA → Contract のチェーンは不可</h3>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code>テストEOA #5
-  └─ delegate → テストEOA #4 (既に Proxy にdelegate済み)
-                  └─ delegate → Proxy (Contract)
-</code></pre>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code>結果: ETH 送金時に
-  &quot;invalid opcode: opcode 0xef not defined&quot;
-  でリバート
+<h2 id="%E6%A4%9C%E8%A8%BC%E7%B5%90%E6%9E%9C-2-%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88%E9%9B%86%E7%B4%84-%E2%9C%85">検証結果 2: イベント集約 <img class="emoji" draggable="false" alt="✅" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/2705.svg" data-marp-twemoji=""/></h2>
+<h3 id="call-%E3%83%91%E3%82%BF%E3%83%BC%E3%83%B3%E3%81%AB%E3%82%88%E3%82%8B%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88%E9%9B%86%E7%B4%84%E3%81%8C-eoa-%E3%81%A7%E3%82%82%E5%8B%95%E4%BD%9C">CALL パターンによるイベント集約が EOA でも動作</h3>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code>User → ETH送金 → delegated EOA（元は普通のEOA）
+                   │
+                   │ Proxyバイトコードが実行される
+                   │ calldatasize==0 → CALL
+                   ▼
+            ExchangeDeposit 本体
+              │ receive() → emit Deposit(eoa_addr, amount)
+              ▼
+           coldAddress
 </code></pre>
 <ul>
-<li>delegation 設定自体は成功する（コード <code>0xef0100{eoa}</code> が入る）</li>
-<li>しかし実行時、delegate 先が EOA の場合は<br />
-<code>0xef0100...</code> のバイトコードを実行しようとして失敗</li>
-<li><strong>delegate 先は実際のコントラクトでなければならない</strong></li>
+<li>delegated EOA への ETH 送金で <strong>ExchangeDeposit 本体に Deposit イベント</strong>が記録</li>
+<li><code>eth_getLogs(ExchangeDeposit)</code> で <strong>一括監視</strong> が実現</li>
+<li><code>Deposit.receiver</code> = delegated EOA アドレス（= 既存の入金アドレス）</li>
 </ul>
 <blockquote>
-<p><a href="https://sepolia.etherscan.io/tx/0x1f6e2b5561220d7d66d3809fecc16e4b06ffce6d26a214cd7b144e4f1415d099">delegation TX</a> — EOA #5 → EOA #4 への delegation は成功（ETH送金時に revert）</p>
+<p><a href="https://sepolia.etherscan.io/tx/0xddf3afa2ad2f7f76dc7536039871012ddf97fd8f808f6c60ac900db0704c4ad5">Sepolia TX</a> — 外部から delegated EOA に ETH 送金 → Deposit が ExchangeDeposit 本体に記録</p>
 </blockquote>
 <footer>社内勉強会</footer>
 </section>
@@ -739,7 +763,66 @@ pre {
 table {
   font-size: 20px;
 }
-;" data-marpit-pagination-total="22">
+;" data-marpit-pagination-total="23">
+<header>EIP-7702 × ExchangeDeposit 検証レポート</header>
+<h2 id="%E6%A4%9C%E8%A8%BC%E7%B5%90%E6%9E%9C-3-delegation-chain-%E2%9D%8C">検証結果 3: delegation chain <img class="emoji" draggable="false" alt="❌" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/274c.svg" data-marp-twemoji=""/></h2>
+<h3 id="eoa-%E2%86%92-eoa-%E2%86%92-contract-%E3%81%AE%E3%83%81%E3%82%A7%E3%83%BC%E3%83%B3%E3%81%AF%E4%B8%8D%E5%8F%AF">EOA → EOA → Contract のチェーンは不可</h3>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code>テストEOA #5
+  └─ delegate → テストEOA #4 (既に Proxy にdelegate済み)
+                  └─ delegate → Proxy (Contract)
+</code></pre>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code>結果: ETH 送金時に
+  &quot;invalid opcode: opcode 0xef not defined&quot;
+  でリバート
+</code></pre>
+<ul>
+<li>delegation 設定自体は成功する（コード <code>0xef0100{eoa}</code> が入る）</li>
+<li>しかし実行時、delegate 先が EOA の場合は<br />
+<code>0xef0100...</code> のバイトコードを実行しようとして失敗</li>
+<li><strong>delegate 先は実際のコントラクトでなければならない</strong></li>
+</ul>
+<blockquote>
+<p><a href="https://sepolia.etherscan.io/tx/0x1f6e2b5561220d7d66d3809fecc16e4b06ffce6d26a214cd7b144e4f1415d099">delegation TX</a> — EOA #5 → EOA #4 への delegation は成功（ETH送金時に revert）</p>
+</blockquote>
+<footer>社内勉強会</footer>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="14" data-paginate="true" data-header="EIP-7702 × ExchangeDeposit 検証レポート" data-footer="社内勉強会" data-theme="default" data-style="section {
+  font-size: 24px;
+}
+h1 {
+  font-size: 36px;
+}
+h2 {
+  font-size: 30px;
+}
+code {
+  font-size: 18px;
+}
+pre {
+  font-size: 16px;
+}
+table {
+  font-size: 20px;
+}
+" lang="en-US" data-marpit-pagination="14" style="--paginate:true;--header:EIP-7702 × ExchangeDeposit 検証レポート;--footer:社内勉強会;--theme:default;--style:section {
+  font-size: 24px;
+}
+h1 {
+  font-size: 36px;
+}
+h2 {
+  font-size: 30px;
+}
+code {
+  font-size: 18px;
+}
+pre {
+  font-size: 16px;
+}
+table {
+  font-size: 20px;
+}
+;" data-marpit-pagination-total="23">
 <header>EIP-7702 × ExchangeDeposit 検証レポート</header>
 <h2 id="%E6%A4%9C%E8%A8%BC%E7%B5%90%E6%9E%9C-4-receive-%E5%9B%9E%E9%81%BF-%E2%9C%85">検証結果 4: receive() 回避 <img class="emoji" draggable="false" alt="✅" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/2705.svg" data-marp-twemoji=""/></h2>
 <h3 id="delegation-%E8%A8%AD%E5%AE%9A-tx-%E3%81%AE-to-%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9%E3%81%AE%E9%81%B8%E3%81%B3%E6%96%B9">delegation 設定 TX の to アドレスの選び方</h3>
@@ -781,66 +864,6 @@ to をどこにしても delegation は正しく設定される。</p>
 </blockquote>
 <footer>社内勉強会</footer>
 </section>
-</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="14" data-paginate="true" data-header="EIP-7702 × ExchangeDeposit 検証レポート" data-footer="社内勉強会" data-theme="default" data-style="section {
-  font-size: 24px;
-}
-h1 {
-  font-size: 36px;
-}
-h2 {
-  font-size: 30px;
-}
-code {
-  font-size: 18px;
-}
-pre {
-  font-size: 16px;
-}
-table {
-  font-size: 20px;
-}
-" lang="en-US" data-marpit-pagination="14" style="--paginate:true;--header:EIP-7702 × ExchangeDeposit 検証レポート;--footer:社内勉強会;--theme:default;--style:section {
-  font-size: 24px;
-}
-h1 {
-  font-size: 36px;
-}
-h2 {
-  font-size: 30px;
-}
-code {
-  font-size: 18px;
-}
-pre {
-  font-size: 16px;
-}
-table {
-  font-size: 20px;
-}
-;" data-marpit-pagination-total="22">
-<header>EIP-7702 × ExchangeDeposit 検証レポート</header>
-<h2 id="%E6%A4%9C%E8%A8%BC%E7%B5%90%E6%9E%9C-5-%E3%83%90%E3%83%83%E3%83%81-delegation-%E2%9C%85">検証結果 5: バッチ delegation <img class="emoji" draggable="false" alt="✅" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/2705.svg" data-marp-twemoji=""/></h2>
-<h3 id="1tx-%E3%81%A7%E8%A4%87%E6%95%B0-eoa-%E3%82%92%E4%B8%80%E6%8B%AC-delegate%E6%97%A2%E5%AD%98-eoa-%E3%82%92%E4%B8%80%E6%8B%AC%E5%A4%89%E6%8F%9B">1TX で複数 EOA を一括 delegate（既存 EOA を一括変換）</h3>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-solidity">// script/BatchDelegate.s.sol (Foundry)
-vm.signAndAttachDelegation(delegateTarget, keyA);
-vm.signAndAttachDelegation(delegateTarget, keyB);
-vm.signAndAttachDelegation(delegateTarget, keyC);
-
-vm.startBroadcast();
-address(0).call(&quot;&quot;);  // 空のcallでauthorizationだけ処理
-vm.stopBroadcast();
-</code></pre>
-<ul>
-<li><code>cast</code> 単体では <strong>複数 authorization を1TXに含められない</strong></li>
-<li><strong>Forge Script</strong> + <code>vm.signAndAttachDelegation</code> で実現可能</li>
-<li>ガス支払い者（sender）と delegation 対象の EOA は別でOK</li>
-</ul>
-<p>→ 大量の既存 EOA を <strong>バッチで一気にスマートアカウント化</strong> できる</p>
-<blockquote>
-<p><a href="https://sepolia.etherscan.io/tx/0x9f00d9c6c922c76f1851d81c0ef609a727984213a46105c83143f3891701edd1">Sepolia TX</a> — 1TX で 3 EOA を一括 delegate (authorization_list × 3)</p>
-</blockquote>
-<footer>社内勉強会</footer>
-</section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="15" data-paginate="true" data-header="EIP-7702 × ExchangeDeposit 検証レポート" data-footer="社内勉強会" data-theme="default" data-style="section {
   font-size: 24px;
 }
@@ -877,26 +900,28 @@ pre {
 table {
   font-size: 20px;
 }
-;" data-marpit-pagination-total="22">
+;" data-marpit-pagination-total="23">
 <header>EIP-7702 × ExchangeDeposit 検証レポート</header>
-<h2 id="%E6%A4%9C%E8%A8%BC%E7%B5%90%E6%9E%9C-6-storage-vs-immutable">検証結果 6: storage vs immutable</h2>
-<h3 id="delegated-eoa-%E3%81%A7%E3%81%AE-storage-%E8%AA%AD%E3%81%BF%E5%8F%96%E3%82%8A">delegated EOA での storage 読み取り</h3>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code>┌─────────────────────────────────────────────────┐
-│ delegated EOA（元は普通の入金アドレス）           │
-│                                                 │
-│  code: 0xef0100{Proxy address}                  │
-│  storage: 空（EOA なので何もない）               │
-│                                                 │
-│  Proxy のバイトコードが実行されるが…             │
-│  → immutable (バイトコード埋込) → 読める <img class="emoji" draggable="false" alt="✅" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/2705.svg" data-marp-twemoji=""/>      │
-│  → storage (コントラクト固有)   → 空 <img class="emoji" draggable="false" alt="⚠" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/26a0.svg" data-marp-twemoji=""/>          │
-└─────────────────────────────────────────────────┘
+<h2 id="%E6%A4%9C%E8%A8%BC%E7%B5%90%E6%9E%9C-5-%E3%83%90%E3%83%83%E3%83%81-delegation-%E2%9C%85">検証結果 5: バッチ delegation <img class="emoji" draggable="false" alt="✅" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/2705.svg" data-marp-twemoji=""/></h2>
+<h3 id="1tx-%E3%81%A7%E8%A4%87%E6%95%B0-eoa-%E3%82%92%E4%B8%80%E6%8B%AC-delegate%E6%97%A2%E5%AD%98-eoa-%E3%82%92%E4%B8%80%E6%8B%AC%E5%A4%89%E6%8F%9B">1TX で複数 EOA を一括 delegate（既存 EOA を一括変換）</h3>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-solidity">// script/BatchDelegate.s.sol (Foundry)
+vm.signAndAttachDelegation(delegateTarget, keyA);
+vm.signAndAttachDelegation(delegateTarget, keyB);
+vm.signAndAttachDelegation(delegateTarget, keyC);
+
+vm.startBroadcast();
+address(0).call(&quot;&quot;);  // 空のcallでauthorizationだけ処理
+vm.stopBroadcast();
 </code></pre>
 <ul>
-<li>Proxy バイトコードに埋め込まれた <strong>ExchangeDeposit アドレス（immutable 相当）</strong> は読める</li>
-<li>EOA の <strong>storage は空</strong> なので、storage に依存する処理は動かない</li>
-<li>ExchangeDeposit Proxy の <code>receive()</code> は <strong>CALL で本体に飛ぶ</strong>ので問題なし</li>
+<li><code>cast</code> 単体では <strong>複数 authorization を1TXに含められない</strong></li>
+<li><strong>Forge Script</strong> + <code>vm.signAndAttachDelegation</code> で実現可能</li>
+<li>ガス支払い者（sender）と delegation 対象の EOA は別でOK</li>
 </ul>
+<p>→ 大量の既存 EOA を <strong>バッチで一気にスマートアカウント化</strong> できる</p>
+<blockquote>
+<p><a href="https://sepolia.etherscan.io/tx/0x9f00d9c6c922c76f1851d81c0ef609a727984213a46105c83143f3891701edd1">Sepolia TX</a> — 1TX で 3 EOA を一括 delegate (authorization_list × 3)</p>
+</blockquote>
 <footer>社内勉強会</footer>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="16" data-paginate="true" data-header="EIP-7702 × ExchangeDeposit 検証レポート" data-footer="社内勉強会" data-theme="default" data-style="section {
@@ -935,28 +960,26 @@ pre {
 table {
   font-size: 20px;
 }
-;" data-marpit-pagination-total="22">
+;" data-marpit-pagination-total="23">
 <header>EIP-7702 × ExchangeDeposit 検証レポート</header>
-<h2 id="%E6%A4%9C%E8%A8%BC%E7%B5%90%E6%9E%9C-7-exchangedeposit-%E6%9C%AC%E4%BD%93%E3%81%AB%E7%9B%B4%E6%8E%A5-delegate-%E2%9D%8C">検証結果 7: ExchangeDeposit 本体に直接 delegate <img class="emoji" draggable="false" alt="❌" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/274c.svg" data-marp-twemoji=""/></h2>
-<h3 id="proxy-%E3%81%A7%E3%81%AF%E3%81%AA%E3%81%8F%E6%9C%AC%E4%BD%93%E3%81%AB-delegate-%E3%81%97%E3%81%9F%E5%A0%B4%E5%90%88">Proxy ではなく本体に delegate した場合</h3>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code>EOA --delegate-→ ExchangeDeposit 本体
-                  │
-                  │ receive() 実行（EOA のコンテキスト）
-                  │ coldAddress を storage から読む
-                  │ → 空（EOA の storage）
-                  │ → coldAddress == address(0)
-                  │ → &quot;I am dead :-(&quot; で revert <img class="emoji" draggable="false" alt="❌" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/274c.svg" data-marp-twemoji=""/>
+<h2 id="%E6%A4%9C%E8%A8%BC%E7%B5%90%E6%9E%9C-6-storage-vs-immutable">検証結果 6: storage vs immutable</h2>
+<h3 id="delegated-eoa-%E3%81%A7%E3%81%AE-storage-%E8%AA%AD%E3%81%BF%E5%8F%96%E3%82%8A">delegated EOA での storage 読み取り</h3>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code>┌─────────────────────────────────────────────────┐
+│ delegated EOA（元は普通の入金アドレス）           │
+│                                                 │
+│  code: 0xef0100{Proxy address}                  │
+│  storage: 空（EOA なので何もない）               │
+│                                                 │
+│  Proxy のバイトコードが実行されるが…             │
+│  → immutable (バイトコード埋込) → 読める <img class="emoji" draggable="false" alt="✅" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/2705.svg" data-marp-twemoji=""/>      │
+│  → storage (コントラクト固有)   → 空 <img class="emoji" draggable="false" alt="⚠" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/26a0.svg" data-marp-twemoji=""/>          │
+└─────────────────────────────────────────────────┘
 </code></pre>
 <ul>
-<li>ExchangeDeposit 本体は <code>coldAddress</code> を <strong>storage</strong> から読む</li>
-<li>EOA の storage は空なので <code>coldAddress == address(0)</code> → revert</li>
-<li><strong>Proxy に delegate するのが正解</strong><br />
-（Proxy は CALL パターンで本体の storage を参照する）</li>
+<li>Proxy バイトコードに埋め込まれた <strong>ExchangeDeposit アドレス（immutable 相当）</strong> は読める</li>
+<li>EOA の <strong>storage は空</strong> なので、storage に依存する処理は動かない</li>
+<li>ExchangeDeposit Proxy の <code>receive()</code> は <strong>CALL で本体に飛ぶ</strong>ので問題なし</li>
 </ul>
-<blockquote>
-<p>※ revert は cast シミュレーションで確認。バッチ delegation TX では ExchangeDeposit 本体への<br />
-delegate も試行: <a href="https://sepolia.etherscan.io/tx/0x9f00d9c6c922c76f1851d81c0ef609a727984213a46105c83143f3891701edd1">Sepolia TX</a></p>
-</blockquote>
 <footer>社内勉強会</footer>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="17" data-paginate="true" data-header="EIP-7702 × ExchangeDeposit 検証レポート" data-footer="社内勉強会" data-theme="default" data-style="section {
@@ -995,7 +1018,67 @@ pre {
 table {
   font-size: 20px;
 }
-;" data-marpit-pagination-total="22">
+;" data-marpit-pagination-total="23">
+<header>EIP-7702 × ExchangeDeposit 検証レポート</header>
+<h2 id="%E6%A4%9C%E8%A8%BC%E7%B5%90%E6%9E%9C-7-exchangedeposit-%E6%9C%AC%E4%BD%93%E3%81%AB%E7%9B%B4%E6%8E%A5-delegate-%E2%9D%8C">検証結果 7: ExchangeDeposit 本体に直接 delegate <img class="emoji" draggable="false" alt="❌" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/274c.svg" data-marp-twemoji=""/></h2>
+<h3 id="proxy-%E3%81%A7%E3%81%AF%E3%81%AA%E3%81%8F%E6%9C%AC%E4%BD%93%E3%81%AB-delegate-%E3%81%97%E3%81%9F%E5%A0%B4%E5%90%88">Proxy ではなく本体に delegate した場合</h3>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code>EOA --delegate-→ ExchangeDeposit 本体
+                  │
+                  │ receive() 実行（EOA のコンテキスト）
+                  │ coldAddress を storage から読む
+                  │ → 空（EOA の storage）
+                  │ → coldAddress == address(0)
+                  │ → &quot;I am dead :-(&quot; で revert <img class="emoji" draggable="false" alt="❌" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/274c.svg" data-marp-twemoji=""/>
+</code></pre>
+<ul>
+<li>ExchangeDeposit 本体は <code>coldAddress</code> を <strong>storage</strong> から読む</li>
+<li>EOA の storage は空なので <code>coldAddress == address(0)</code> → revert</li>
+<li><strong>Proxy に delegate するのが正解</strong><br />
+（Proxy は CALL パターンで本体の storage を参照する）</li>
+</ul>
+<blockquote>
+<p>※ revert は cast シミュレーションで確認。バッチ delegation TX では ExchangeDeposit 本体への<br />
+delegate も試行: <a href="https://sepolia.etherscan.io/tx/0x9f00d9c6c922c76f1851d81c0ef609a727984213a46105c83143f3891701edd1">Sepolia TX</a></p>
+</blockquote>
+<footer>社内勉強会</footer>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="18" data-paginate="true" data-header="EIP-7702 × ExchangeDeposit 検証レポート" data-footer="社内勉強会" data-theme="default" data-style="section {
+  font-size: 24px;
+}
+h1 {
+  font-size: 36px;
+}
+h2 {
+  font-size: 30px;
+}
+code {
+  font-size: 18px;
+}
+pre {
+  font-size: 16px;
+}
+table {
+  font-size: 20px;
+}
+" lang="en-US" data-marpit-pagination="18" style="--paginate:true;--header:EIP-7702 × ExchangeDeposit 検証レポート;--footer:社内勉強会;--theme:default;--style:section {
+  font-size: 24px;
+}
+h1 {
+  font-size: 36px;
+}
+h2 {
+  font-size: 30px;
+}
+code {
+  font-size: 18px;
+}
+pre {
+  font-size: 16px;
+}
+table {
+  font-size: 20px;
+}
+;" data-marpit-pagination-total="23">
 <header>EIP-7702 × ExchangeDeposit 検証レポート</header>
 <h2 id="%E8%A3%9C%E8%B6%B3-receive-%E3%81%8C%E7%99%BA%E7%81%AB%E3%81%97%E3%81%AA%E3%81%84%E3%82%B1%E3%83%BC%E3%82%B9">補足: receive() が発火しないケース</h2>
 <h3 id="eth-%E3%81%8C-receive-%E3%82%92%E7%B5%8C%E7%94%B1%E3%81%9B%E3%81%9A%E3%81%AB%E5%B1%8A%E3%81%8F%E3%83%91%E3%82%BF%E3%83%BC%E3%83%B3">ETH が receive() を経由せずに届くパターン</h3>
@@ -1061,67 +1144,6 @@ gas: 36,390 / 内部送金: 0.0008 ETH → coldAddress</p>
 </blockquote>
 <footer>社内勉強会</footer>
 </section>
-</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="18" data-paginate="true" data-header="EIP-7702 × ExchangeDeposit 検証レポート" data-footer="社内勉強会" data-theme="default" data-style="section {
-  font-size: 24px;
-}
-h1 {
-  font-size: 36px;
-}
-h2 {
-  font-size: 30px;
-}
-code {
-  font-size: 18px;
-}
-pre {
-  font-size: 16px;
-}
-table {
-  font-size: 20px;
-}
-" lang="en-US" data-marpit-pagination="18" style="--paginate:true;--header:EIP-7702 × ExchangeDeposit 検証レポート;--footer:社内勉強会;--theme:default;--style:section {
-  font-size: 24px;
-}
-h1 {
-  font-size: 36px;
-}
-h2 {
-  font-size: 30px;
-}
-code {
-  font-size: 18px;
-}
-pre {
-  font-size: 16px;
-}
-table {
-  font-size: 20px;
-}
-;" data-marpit-pagination-total="22">
-<header>EIP-7702 × ExchangeDeposit 検証レポート</header>
-<h2 id="%E5%AE%9F%E9%81%8B%E7%94%A8%E3%81%AB%E5%90%91%E3%81%91%E3%81%9F%E8%AA%B2%E9%A1%8C">実運用に向けた課題</h2>
-<h3 id="1-%E6%97%A2%E5%AD%98-eoa-%E3%81%AE%E7%A7%98%E5%AF%86%E9%8D%B5%E3%81%A7-authorization-%E7%BD%B2%E5%90%8D%E3%81%8C%E5%BF%85%E8%A6%81">1. 既存 EOA の秘密鍵で authorization 署名が必要</h3>
-<ul>
-<li>EIP-7702 の delegation 設定には <strong>各 EOA の秘密鍵による署名</strong> が必要</li>
-<li>署名サーバへの EIP-7702 authorization 署名機能の実装</li>
-</ul>
-<h3 id="2-%E3%83%90%E3%83%83%E3%83%81-delegation-%E3%81%AE%E3%83%84%E3%83%BC%E3%83%AB%E6%95%B4%E5%82%99">2. バッチ delegation のツール整備</h3>
-<ul>
-<li><code>cast</code> 単体では非対応 → <strong>Forge Script</strong> が必要</li>
-<li>本番では専用ツール or SDK での実装が必要</li>
-</ul>
-<h3 id="3-exchangedeposit-%E3%82%B3%E3%83%B3%E3%83%88%E3%83%A9%E3%82%AF%E3%83%88%E3%81%AE%E3%83%87%E3%83%97%E3%83%AD%E3%82%A4">3. ExchangeDeposit コントラクトのデプロイ</h3>
-<ul>
-<li>ExchangeDeposit 本体 + Proxy（delegate先）のデプロイが必要</li>
-<li>coldAddress / adminAddress の設定</li>
-</ul>
-<h3 id="4-delegation-%E3%81%AE%E6%B0%B8%E7%B6%9A%E6%80%A7">4. delegation の永続性</h3>
-<ul>
-<li>EOA から TX を送ると nonce が変わるが、delegation は維持される</li>
-<li>ただし EOA の秘密鍵で <strong>delegation 解除も可能</strong> → 鍵管理が重要</li>
-</ul>
-<footer>社内勉強会</footer>
-</section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="19" data-paginate="true" data-header="EIP-7702 × ExchangeDeposit 検証レポート" data-footer="社内勉強会" data-theme="default" data-style="section {
   font-size: 24px;
 }
@@ -1158,7 +1180,68 @@ pre {
 table {
   font-size: 20px;
 }
-;" data-marpit-pagination-total="22">
+;" data-marpit-pagination-total="23">
+<header>EIP-7702 × ExchangeDeposit 検証レポート</header>
+<h2 id="%E5%AE%9F%E9%81%8B%E7%94%A8%E3%81%AB%E5%90%91%E3%81%91%E3%81%9F%E8%AA%B2%E9%A1%8C">実運用に向けた課題</h2>
+<h3 id="1-%E6%97%A2%E5%AD%98-eoa-%E3%81%AE%E7%A7%98%E5%AF%86%E9%8D%B5%E3%81%A7-authorization-%E7%BD%B2%E5%90%8D%E3%81%8C%E5%BF%85%E8%A6%81">1. 既存 EOA の秘密鍵で authorization 署名が必要</h3>
+<ul>
+<li>EIP-7702 の delegation 設定には <strong>各 EOA の秘密鍵による署名</strong> が必要</li>
+<li>署名サーバへの EIP-7702 authorization 署名機能の実装</li>
+</ul>
+<h3 id="2-%E3%83%90%E3%83%83%E3%83%81-delegation-%E3%81%AE%E3%83%84%E3%83%BC%E3%83%AB%E6%95%B4%E5%82%99">2. バッチ delegation のツール整備</h3>
+<ul>
+<li><code>cast</code> 単体では非対応 → <strong>Forge Script</strong> が必要</li>
+<li>本番では専用ツール or SDK での実装が必要</li>
+</ul>
+<h3 id="3-exchangedeposit-%E3%82%B3%E3%83%B3%E3%83%88%E3%83%A9%E3%82%AF%E3%83%88%E3%81%AE%E3%83%87%E3%83%97%E3%83%AD%E3%82%A4">3. ExchangeDeposit コントラクトのデプロイ</h3>
+<ul>
+<li>ExchangeDeposit 本体 + Proxy（delegate先）のデプロイが必要</li>
+<li>coldAddress / adminAddress の設定</li>
+</ul>
+<h3 id="4-delegation-%E3%81%AE%E6%B0%B8%E7%B6%9A%E6%80%A7">4. delegation の永続性</h3>
+<ul>
+<li>EOA から TX を送ると nonce が変わるが、delegation は維持される</li>
+<li>ただし EOA の秘密鍵で <strong>delegation 解除も可能</strong> → 鍵管理が重要</li>
+</ul>
+<footer>社内勉強会</footer>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="20" data-paginate="true" data-header="EIP-7702 × ExchangeDeposit 検証レポート" data-footer="社内勉強会" data-theme="default" data-style="section {
+  font-size: 24px;
+}
+h1 {
+  font-size: 36px;
+}
+h2 {
+  font-size: 30px;
+}
+code {
+  font-size: 18px;
+}
+pre {
+  font-size: 16px;
+}
+table {
+  font-size: 20px;
+}
+" lang="en-US" data-marpit-pagination="20" style="--paginate:true;--header:EIP-7702 × ExchangeDeposit 検証レポート;--footer:社内勉強会;--theme:default;--style:section {
+  font-size: 24px;
+}
+h1 {
+  font-size: 36px;
+}
+h2 {
+  font-size: 30px;
+}
+code {
+  font-size: 18px;
+}
+pre {
+  font-size: 16px;
+}
+table {
+  font-size: 20px;
+}
+;" data-marpit-pagination-total="23">
 <header>EIP-7702 × ExchangeDeposit 検証レポート</header>
 <h2 id="%E7%8F%BE%E8%A1%8C-eoa-%E6%96%B9%E5%BC%8F-vs-exchangedeposit-proxy-vs-eip-7702-%E6%AF%94%E8%BC%83">現行 EOA 方式 vs ExchangeDeposit Proxy vs EIP-7702 比較</h2>
 <table>
@@ -1229,65 +1312,6 @@ table {
 </table>
 <footer>社内勉強会</footer>
 </section>
-</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="20" data-paginate="true" data-header="EIP-7702 × ExchangeDeposit 検証レポート" data-footer="社内勉強会" data-theme="default" data-style="section {
-  font-size: 24px;
-}
-h1 {
-  font-size: 36px;
-}
-h2 {
-  font-size: 30px;
-}
-code {
-  font-size: 18px;
-}
-pre {
-  font-size: 16px;
-}
-table {
-  font-size: 20px;
-}
-" lang="en-US" data-marpit-pagination="20" style="--paginate:true;--header:EIP-7702 × ExchangeDeposit 検証レポート;--footer:社内勉強会;--theme:default;--style:section {
-  font-size: 24px;
-}
-h1 {
-  font-size: 36px;
-}
-h2 {
-  font-size: 30px;
-}
-code {
-  font-size: 18px;
-}
-pre {
-  font-size: 16px;
-}
-table {
-  font-size: 20px;
-}
-;" data-marpit-pagination-total="22">
-<header>EIP-7702 × ExchangeDeposit 検証レポート</header>
-<h2 id="%E3%81%BE%E3%81%A8%E3%82%81">まとめ</h2>
-<h3 id="%E5%8B%95%E3%81%8F%E3%81%93%E3%81%A8-%E2%9C%85">動くこと <img class="emoji" draggable="false" alt="✅" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/2705.svg" data-marp-twemoji=""/></h3>
-<ul>
-<li>既存 EOA → Proxy に delegate → ETH 入金で Deposit イベント発火</li>
-<li><strong>イベント集約</strong>: <code>eth_getLogs</code> 1回で全入金を一括監視可能</li>
-<li><strong>バッチ delegation</strong>: 1TX で複数 EOA を一括スマートアカウント化</li>
-<li>delegation 設定時の receive() 回避（to=coldAddress / address(0)）</li>
-</ul>
-<h3 id="%E5%8B%95%E3%81%8B%E3%81%AA%E3%81%84%E3%81%93%E3%81%A8-%E2%9D%8C">動かないこと <img class="emoji" draggable="false" alt="❌" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/274c.svg" data-marp-twemoji=""/></h3>
-<ul>
-<li>delegation chain（EOA → EOA → Contract）</li>
-<li>ExchangeDeposit 本体への直接 delegate（storage が空で revert）</li>
-</ul>
-<h3 id="%E7%B5%90%E8%AB%96">結論</h3>
-<ul>
-<li>EIP-7702 で <strong>既存 EOA 入金アドレスを変えずに</strong> スマートアカウント化が可能</li>
-<li>ExchangeDeposit の Proxy パターンとの組み合わせで <strong>一括監視 + 自動転送</strong> を実現</li>
-<li>導入には <strong>署名サーバ整備</strong> と <strong>Pectra 対応チェーン</strong> が前提</li>
-</ul>
-<footer>社内勉強会</footer>
-</section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="21" data-paginate="true" data-header="EIP-7702 × ExchangeDeposit 検証レポート" data-footer="社内勉強会" data-theme="default" data-style="section {
   font-size: 24px;
 }
@@ -1324,28 +1348,26 @@ pre {
 table {
   font-size: 20px;
 }
-;" data-marpit-pagination-total="22">
+;" data-marpit-pagination-total="23">
 <header>EIP-7702 × ExchangeDeposit 検証レポート</header>
-<h2 id="%E8%A3%9C%E8%B6%B3-%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9%E3%83%9D%E3%82%A4%E3%82%BA%E3%83%8B%E3%83%B3%E3%82%B0--%E3%83%80%E3%82%B9%E3%83%88%E3%82%A2%E3%82%BF%E3%83%83%E3%82%AF%E5%AF%BE%E7%AD%96">補足: アドレスポイズニング / ダストアタック対策</h2>
-<h3 id="%E7%8F%BE%E8%A1%8C-eoa-%E6%96%B9%E5%BC%8F%E3%81%AE%E5%95%8F%E9%A1%8C">現行 EOA 方式の問題</h3>
+<h2 id="%E3%81%BE%E3%81%A8%E3%82%81">まとめ</h2>
+<h3 id="%E5%8B%95%E3%81%8F%E3%81%93%E3%81%A8-%E2%9C%85">動くこと <img class="emoji" draggable="false" alt="✅" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/2705.svg" data-marp-twemoji=""/></h3>
 <ul>
-<li>EOA は <strong>送られてくる ETH を拒否できない</strong></li>
-<li>攻撃者が微小額（dust）を大量の EOA に送りつけることが可能</li>
-<li><strong>アドレスポイズニング</strong>: 似たアドレスからダスト送金 → ユーザーが誤送金を誘発</li>
+<li>既存 EOA → Proxy に delegate → ETH 入金で Deposit イベント発火</li>
+<li><strong>イベント集約</strong>: <code>eth_getLogs</code> 1回で全入金を一括監視可能</li>
+<li><strong>バッチ delegation</strong>: 1TX で複数 EOA を一括スマートアカウント化</li>
+<li>delegation 設定時の receive() 回避（to=coldAddress / address(0)）</li>
 </ul>
-<h3 id="exchangedeposit-%E3%81%AE-minimuminput-%E3%81%AB%E3%82%88%E3%82%8B%E9%98%B2%E5%BE%A1">ExchangeDeposit の minimumInput による防御</h3>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-solidity">require(msg.value &gt;= minimumInput, 'Amount too small');
-// minimumInput = 1e16 (0.01 ETH)
-</code></pre>
+<h3 id="%E5%8B%95%E3%81%8B%E3%81%AA%E3%81%84%E3%81%93%E3%81%A8-%E2%9D%8C">動かないこと <img class="emoji" draggable="false" alt="❌" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/274c.svg" data-marp-twemoji=""/></h3>
 <ul>
-<li><strong>minimumInput 未満の送金は revert</strong> される</li>
-<li>ダスト送金がそもそもコントラクトレベルで拒否される</li>
-<li><code>minimumInput</code> は admin が <code>changeMinInput()</code> で変更可能</li>
+<li>delegation chain（EOA → EOA → Contract）</li>
+<li>ExchangeDeposit 本体への直接 delegate（storage が空で revert）</li>
 </ul>
-<h3 id="eip-7702-%E3%81%A8%E3%81%AE%E7%B5%84%E3%81%BF%E5%90%88%E3%82%8F%E3%81%9B">EIP-7702 との組み合わせ</h3>
+<h3 id="%E7%B5%90%E8%AB%96">結論</h3>
 <ul>
-<li>既存 EOA を delegate → <strong>EOA なのに minimumInput で dust を弾ける</strong></li>
-<li>sweep/collect 不要 + ダストアタック耐性 = 運用負荷が大幅に軽減</li>
+<li>EIP-7702 で <strong>既存 EOA 入金アドレスを変えずに</strong> スマートアカウント化が可能</li>
+<li>ExchangeDeposit の Proxy パターンとの組み合わせで <strong>一括監視 + 自動転送</strong> を実現</li>
+<li>導入には <strong>署名サーバ整備</strong> と <strong>Pectra 対応チェーン</strong> が前提</li>
 </ul>
 <footer>社内勉強会</footer>
 </section>
@@ -1385,7 +1407,68 @@ pre {
 table {
   font-size: 20px;
 }
-;" data-marpit-pagination-total="22">
+;" data-marpit-pagination-total="23">
+<header>EIP-7702 × ExchangeDeposit 検証レポート</header>
+<h2 id="%E8%A3%9C%E8%B6%B3-%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9%E3%83%9D%E3%82%A4%E3%82%BA%E3%83%8B%E3%83%B3%E3%82%B0--%E3%83%80%E3%82%B9%E3%83%88%E3%82%A2%E3%82%BF%E3%83%83%E3%82%AF%E5%AF%BE%E7%AD%96">補足: アドレスポイズニング / ダストアタック対策</h2>
+<h3 id="%E7%8F%BE%E8%A1%8C-eoa-%E6%96%B9%E5%BC%8F%E3%81%AE%E5%95%8F%E9%A1%8C">現行 EOA 方式の問題</h3>
+<ul>
+<li>EOA は <strong>送られてくる ETH を拒否できない</strong></li>
+<li>攻撃者が微小額（dust）を大量の EOA に送りつけることが可能</li>
+<li><strong>アドレスポイズニング</strong>: 似たアドレスからダスト送金 → ユーザーが誤送金を誘発</li>
+</ul>
+<h3 id="exchangedeposit-%E3%81%AE-minimuminput-%E3%81%AB%E3%82%88%E3%82%8B%E9%98%B2%E5%BE%A1">ExchangeDeposit の minimumInput による防御</h3>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-solidity">require(msg.value &gt;= minimumInput, 'Amount too small');
+// minimumInput = 1e16 (0.01 ETH)
+</code></pre>
+<ul>
+<li><strong>minimumInput 未満の送金は revert</strong> される</li>
+<li>ダスト送金がそもそもコントラクトレベルで拒否される</li>
+<li><code>minimumInput</code> は admin が <code>changeMinInput()</code> で変更可能</li>
+</ul>
+<h3 id="eip-7702-%E3%81%A8%E3%81%AE%E7%B5%84%E3%81%BF%E5%90%88%E3%82%8F%E3%81%9B">EIP-7702 との組み合わせ</h3>
+<ul>
+<li>既存 EOA を delegate → <strong>EOA なのに minimumInput で dust を弾ける</strong></li>
+<li>sweep/collect 不要 + ダストアタック耐性 = 運用負荷が大幅に軽減</li>
+</ul>
+<footer>社内勉強会</footer>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="23" data-paginate="true" data-header="EIP-7702 × ExchangeDeposit 検証レポート" data-footer="社内勉強会" data-theme="default" data-style="section {
+  font-size: 24px;
+}
+h1 {
+  font-size: 36px;
+}
+h2 {
+  font-size: 30px;
+}
+code {
+  font-size: 18px;
+}
+pre {
+  font-size: 16px;
+}
+table {
+  font-size: 20px;
+}
+" lang="en-US" data-marpit-pagination="23" style="--paginate:true;--header:EIP-7702 × ExchangeDeposit 検証レポート;--footer:社内勉強会;--theme:default;--style:section {
+  font-size: 24px;
+}
+h1 {
+  font-size: 36px;
+}
+h2 {
+  font-size: 30px;
+}
+code {
+  font-size: 18px;
+}
+pre {
+  font-size: 16px;
+}
+table {
+  font-size: 20px;
+}
+;" data-marpit-pagination-total="23">
 <header>EIP-7702 × ExchangeDeposit 検証レポート</header>
 <h2 id="appendix-sepolia-%E3%83%86%E3%82%B9%E3%83%88%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9">Appendix: Sepolia テストアドレス</h2>
 <table>

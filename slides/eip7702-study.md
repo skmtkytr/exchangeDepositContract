@@ -55,6 +55,26 @@ Sepolia テストネットでの実験結果
 
 ---
 
+## 登場人物
+
+| 名前 | 種別 | 役割 |
+|:--|:--|:--|
+| **adminAddress** | EOA | 管理アカウント。コントラクトの設定変更・kill 権限を持つ |
+| **ExchangeDeposit** | Contract | 本体。receive() で ETH 受取 → coldAddress へ転送 + Deposit イベント発火 |
+| **ProxyFactory** | Contract | Proxy を CREATE2 で大量生成するファクトリ |
+| **Proxy** | Contract | 入金アドレス。ETH 受取時に CALL で ExchangeDeposit 本体に転送 |
+| **coldAddress** | EOA | コールドウォレット。入金された ETH の最終送金先 |
+
+```
+User → ETH → Proxy ──CALL──→ ExchangeDeposit ──転送──→ coldAddress
+                                 │
+                              emit Deposit()
+                                 │
+                           adminAddress が設定管理
+```
+
+---
+
 ## アプローチ: ExchangeDeposit を参考に
 
 ### bitbank の ExchangeDeposit コントラクト
