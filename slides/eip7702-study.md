@@ -190,6 +190,59 @@ User → ETH → EOA_3  ← 個別監視       User → ETH → Proxy_2
 
 ---
 
+## ERC20 入金のフロー
+
+### ETH と異なり、ERC20 は receive() が発火しない
+
+```
+User → ERC20.transfer(proxy, amount)
+         │
+         │ ERC20 の残高が Proxy に加算されるだけ
+         │ Proxy のコードは実行されない
+         │ → Deposit イベントも自動転送もなし
+         ▼
+       Proxy に ERC20 が滞留
+         │
+         │ 運用者が gatherErc20(token) を呼ぶ
+         │ calldatasize > 0 → DELEGATECALL パス
+         ▼
+       ExchangeDeposit.gatherErc20() 実行
+         │ balanceOf(proxy) → safeTransfer(coldAddress)
+         ▼
+       coldAddress に ERC20 が転送される
+```
+
+- ERC20 の `transfer()` は受信側のコードを呼ばない
+- **運用者が定期的に `gatherErc20(token)` を呼んで回収**する必要がある
+
+---
+
+## ERC20 入金: ユースケースと運用
+
+### gatherErc20() の仕組み
+
+```solidity
+function gatherErc20(IERC20 instance) external {
+    uint256 forwarderBalance = instance.balanceOf(address(this));
+    if (forwarderBalance == 0) { return; }
+    instance.safeTransfer(getSendAddress(), forwarderBalance);
+}
+```
+
+- 誰でも呼べる（`external`、権限チェックなし）
+- Proxy / delegated EOA どちらでも動作（DELEGATECALL パス）
+
+### 運用イメージ
+
+1. **入金検知**: ERC20 の `Transfer` イベントを監視（to = Proxy / delegated EOA）
+2. **残高チェック**: `balanceOf(proxy)` で滞留トークンを確認
+3. **バッチ回収**: 複数 Proxy に対して `gatherErc20()` を一括実行
+4. **対応トークン**: 任意の ERC20 に対応（USDT, USDC, etc.）
+
+> ETH は receive() で自動転送、ERC20 は gatherErc20() で手動回収
+
+---
+
 ## EIP-7702 とは（1/2）
 
 ### 概要
